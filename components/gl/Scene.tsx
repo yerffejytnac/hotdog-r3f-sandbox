@@ -1,56 +1,72 @@
 "use client";
 
 import {
+  Bounds,
+  Center,
   ContactShadows,
   Environment,
-  PresentationControls,
+  OrbitControls,
+  PerspectiveCamera,
 } from "@react-three/drei";
-import { Canvas, type ThreeElements } from "@react-three/fiber";
-import { BoxGeometry } from "three";
+import { Canvas } from "@react-three/fiber";
+import { Suspense } from "react";
+import * as THREE from "three";
 
-import { theme } from "@/styles";
+import { Logo } from "./Logo";
 
 export const Scene = () => {
   return (
-    <Canvas shadows camera={{ position: [0, 0, 10], fov: 25 }}>
-      <color attach="background" args={[theme.colors.primary[90]]} />
-      <ambientLight intensity={0.5} />
+    <Canvas
+      dpr={[1, 2]}
+      shadows
+      gl={{
+        precision: "highp",
+        powerPreference: "high-performance",
+        alpha: true,
+        reversedDepthBuffer: true,
+        outputColorSpace: THREE.SRGBColorSpace,
+      }}
+      linear
+      flat
+      resize={{ scroll: false, debounce: { scroll: 0, resize: 500 } }}
+    >
+      <OrbitControls
+        makeDefault
+        minDistance={0.1}
+        maxDistance={50}
+        enablePan={true}
+        enableRotate={true}
+      />
+      <PerspectiveCamera
+        position={[0, 0, 1.5]}
+        fov={24}
+        near={0.001}
+        far={10000.0}
+      />
+      <directionalLight position={[-10, 0, -5]} intensity={1} />
+      <directionalLight position={[-1, -2, -5]} intensity={0.2} />
       <spotLight
-        position={[10, 10, 10]}
-        angle={0.15}
+        position={[5, 0, 5]}
+        intensity={2.5}
         penumbra={1}
-        shadow-mapSize={2048}
+        angle={0.35}
         castShadow
       />
-      <PresentationControls
-        global
-        snap={true}
-        rotation={[0, 0.3, 0]}
-        polar={[-Math.PI / 3, Math.PI / 3]}
-        azimuth={[-Math.PI / 1.4, Math.PI / 2]}
-      >
-        <Box position={[0, 0, 0]} />
-      </PresentationControls>
+      <Suspense fallback={null}>
+        <Bounds observe fit margin={1}>
+          <Center>
+            <Logo />
+          </Center>
+        </Bounds>
+      </Suspense>
       <ContactShadows
-        position={[0, -1.4, 0]}
+        position={[0, -2, 0]}
         opacity={0.75}
         scale={10}
         blur={3}
         far={4}
       />
-      <Environment preset="city" />
+      <Environment files="/assets/hdri/Light_Arches_A.hdr" background />
     </Canvas>
-  );
-};
-
-type BoxProps = ThreeElements["mesh"] & {
-  fill?: string;
-};
-
-const Box = ({ fill = theme.colors.secondary[60], ...props }: BoxProps) => {
-  return (
-    <mesh geometry={new BoxGeometry(1, 1, 1)} {...props}>
-      <meshStandardMaterial roughness={0} color={fill} />
-    </mesh>
   );
 };

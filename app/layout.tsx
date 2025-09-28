@@ -3,8 +3,7 @@ import type { Metadata } from "next";
 import { Providers } from "@/components";
 
 export const metadata: Metadata = {
-  title: "App",
-  description: "Boilerplate for Next.js",
+  title: "hotdog-r3f-sandbox",
 };
 
 export default function RootLayout({
